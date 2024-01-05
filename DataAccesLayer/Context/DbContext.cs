@@ -1,5 +1,6 @@
 ﻿using DataAccesLayer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace DataAccesLayer.Context
 {
     public class DbContext : IdentityDbContext<ApplicationUser>
     {
-        public string MyProperty { get; set; }
+        public DbContext(DbContextOptions options) : base(options)
+        {
+        }
     }
 }
