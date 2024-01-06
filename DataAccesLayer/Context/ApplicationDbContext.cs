@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace DataAccesLayer.Context
 {
-    public class DbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public DbContext(DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
 
         }

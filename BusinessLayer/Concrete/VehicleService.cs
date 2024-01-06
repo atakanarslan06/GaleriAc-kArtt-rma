@@ -15,19 +15,28 @@ namespace BusinessLayer.Concrete
 {
     public class VehicleService : IVehicleService
     {
-        private readonly DbContext _dbContext;
+        private readonly DataAccesLayer.Context.ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private ApiResponse _response;
-        public VehicleService(DbContext dbContext, IMapper mapper, ApiResponse response)
+        public VehicleService(DataAccesLayer.Context.ApplicationDbContext context, IMapper mapper, ApiResponse response)
         {
-            _dbContext = dbContext;
+            _context = context;
             _mapper = mapper;
             _response = response;
         }
 
-        public Task<ApiResponse> ChangeVehicleStatus(int vehicleId)
+        public async Task<ApiResponse> ChangeVehicleStatus(int vehicleId)
         {
-            throw new NotImplementedException();
+            var result = await _context.Vehicles.FindAsync(vehicleId);
+            if(result == null)
+            {
+                _response.İsSuccess = false;
+                return _response;
+            }
+            result.IsActive = false;
+            _response.İsSuccess = true;
+            await _context.SaveChangesAsync();
+            return _response;
         }
 
         public async Task<ApiResponse> CreateVehicle(CreateVehicleDTO model)
@@ -37,8 +46,8 @@ namespace BusinessLayer.Concrete
                 var objDTO = _mapper.Map<Vehicle>(model);
                 if(objDTO != null)
                 {
-                     _dbContext.Vehicles.Add(objDTO);
-                    if (await _dbContext.SaveChangesAsync()>0)
+                    _context.Vehicles.Add(objDTO);
+                    if (await _context.SaveChangesAsync()>0)
                     {
                         _response.İsSuccess = true;
                         _response.Result = model;
@@ -53,11 +62,11 @@ namespace BusinessLayer.Concrete
 
         public async Task<ApiResponse> DeleteVehicleResponse(int vehicleId)
         {
-            var result = await _dbContext.Vehicles.FindAsync(vehicleId);
+            var result = await _context.Vehicles.FindAsync(vehicleId);
             if (result != null)
             {
-                _dbContext.Vehicles.Remove(result);
-                if (await _dbContext.SaveChangesAsync()>0)
+                _context.Vehicles.Remove(result);
+                if (await _context.SaveChangesAsync()>0)
                 {
                     _response.İsSuccess = true;
                     return _response;
@@ -67,26 +76,48 @@ namespace BusinessLayer.Concrete
             return _response;
         }
 
-        public Task<ApiResponse> GetVehicle()
+        public async Task<ApiResponse> GetVehicle()
         {
-            throw new NotImplementedException();
+            var vehicle = await _context.Vehicles.Include(x => x.SellerId).ToListAsync();
+            if (vehicle != null)
+            {
+                _response.İsSuccess = true;
+                _response.Result=vehicle;
+                return _response;
+            }
+            _response.İsSuccess = false;
+            return _response;
         }
 
         public async Task<ApiResponse> GetVehicleById(int vehicleId)
         {
-            var result = await _dbContext.Vehicles.Include(x=> x.SellerId).FirstOrDefaultAsync(x=>x.VehicleId == vehicleId);
+            var result = await _context.Vehicles.Include(x=> x.SellerId).FirstOrDefaultAsync(x=>x.VehicleId == vehicleId);
             if (result != null)
             {
                 _response.Result = result;
                 _response.İsSuccess = true;
                 return _response;
             }
-            _response.İsSuccess = false; return _response;
+            _response.İsSuccess = false; 
+            return _response;
         }
 
-        public Task<ApiResponse> UpdateVehicleResponse(int vehicleId, UpdateVehicleDTO model)
+        public async Task<ApiResponse> UpdateVehicleResponse(int vehicleId, UpdateVehicleDTO model)
         {
-            throw new NotImplementedException();
+            var result = await _context.Vehicles.FindAsync(vehicleId);
+            if(result != null)
+            {
+                Vehicle objDTO = _mapper.Map(model, result);
+                if(await _context.SaveChangesAsync()>0)
+                {
+                    _response.İsSuccess=true;
+                    _response.Result=objDTO;
+                    return _response;
+                }
+
+            }
+            _response.İsSuccess = false;
+            return _response;
         }
     }
 }

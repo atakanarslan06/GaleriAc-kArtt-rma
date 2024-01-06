@@ -17,18 +17,18 @@ namespace BusinessLayer.Concrete
 {
     public class UserService : IUserService
     {
-        private readonly DataAccesLayer.Context.DbContext _dbContext;
+        private readonly DataAccesLayer.Context.ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ApiResponse _response;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private string secretKey;
-        public UserService(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ApiResponse response, IMapper mapper, IConfiguration _configuration, DataAccesLayer.Context.DbContext context)
+        public UserService(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ApiResponse response, IMapper mapper, IConfiguration _configuration, DataAccesLayer.Context.ApplicationDbContext context)
         {
             _userManager = userManager;
             _response = response;
             _mapper = mapper;
-            _dbContext = context;
+            _context = context;
             _roleManager = roleManager;
             secretKey = _configuration.GetValue<string>("SecretKey:jwtKey");
 
@@ -36,7 +36,7 @@ namespace BusinessLayer.Concrete
 
         public async Task<ApiResponse> Login(LoginRequestDTO model)
         {
-            ApplicationUser userFromDb = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
+            ApplicationUser userFromDb = _context.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
             if (userFromDb != null)
             {
                 bool isValid = await _userManager.CheckPasswordAsync(userFromDb, model.Password);
@@ -86,7 +86,7 @@ namespace BusinessLayer.Concrete
 
         public async Task<ApiResponse> Register(RegisterRequestDTO model)
         {
-            var userFromDb = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName.ToLower() == model.UserName.ToLower());
+            var userFromDb = _context.ApplicationUsers.FirstOrDefault(x => x.UserName.ToLower() == model.UserName.ToLower());
             if (userFromDb != null)
             {
                 _response.StatusCode = System.Net.HttpStatusCode.BadRequest;

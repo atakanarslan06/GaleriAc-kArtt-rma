@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccesLayer.Migrations
 {
-    [DbContext(typeof(Context.DbContext))]
+    [DbContext(typeof(Context.ApplicationDbContext))]
     [Migration("20240106061026_mig1")]
     partial class mig1
     {
