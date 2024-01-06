@@ -1,6 +1,8 @@
-﻿using DataAccesLayer.Models;
+﻿using DataAccesLayer.Context;
+using DataAccesLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace GaleriAcıkArttırma.Extensions
 {
@@ -10,8 +12,8 @@ namespace GaleriAcıkArttırma.Extensions
         {
 
             #region Context
-            services.AddDbContext<DataAccesLayer.Context.ApplicationDbContext>(options => { options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")); });
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataAccesLayer.Context.ApplicationDbContext>();
+            services.AddDbContext<ApplicationDbContext>(options => { options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")); });
+            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             #endregion
             return services;
         }

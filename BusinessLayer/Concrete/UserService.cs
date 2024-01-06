@@ -17,13 +17,13 @@ namespace BusinessLayer.Concrete
 {
     public class UserService : IUserService
     {
-        private readonly DataAccesLayer.Context.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ApiResponse _response;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private string secretKey;
-        public UserService(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ApiResponse response, IMapper mapper, IConfiguration _configuration, DataAccesLayer.Context.ApplicationDbContext context)
+        public UserService(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ApiResponse response, IMapper mapper, IConfiguration _configuration, ApplicationDbContext context)
         {
             _userManager = userManager;
             _response = response;
@@ -53,7 +53,7 @@ namespace BusinessLayer.Concrete
 
                 SecurityTokenDescriptor tokenDescriptor = new()
                 {
-                    Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                    Subject = new ClaimsIdentity(new Claim[]
                     {
                         new Claim(ClaimTypes.NameIdentifier, userFromDb.Id),
                         new Claim(ClaimTypes.Email, userFromDb.Email),

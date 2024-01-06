@@ -1,5 +1,6 @@
 ﻿using BusinessLayer.Abstraction;
 using BusinessLayer.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaleriAcıkArttırma.Controllers
@@ -70,6 +71,7 @@ namespace GaleriAcıkArttırma.Controllers
 
 
         [HttpDelete("Remove/Vehicle/{vehicleId}")]
+        [Authorize(Roles = "Adminstrator")]
         public async Task<IActionResult> DeleteVehicle([FromRoute] int vehicleId)
         {
             var result = await _vehicleService.DeleteVehicleResponse(vehicleId);
