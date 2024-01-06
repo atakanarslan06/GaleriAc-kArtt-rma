@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DataAccesLayer.Domain
@@ -26,6 +27,7 @@ namespace DataAccesLayer.Domain
         public bool IsActive { get; set; }
         public string Image { get; set; }
         public string SellerId { get; set; }
+        [JsonIgnore]
         public ApplicationUser Seller { get; set; }
         public virtual List<Bid> Bids { get; set; }
     }

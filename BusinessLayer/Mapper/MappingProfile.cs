@@ -15,6 +15,7 @@ namespace BusinessLayer.Mapper
         public MappingProfile()
         { 
             CreateMap<CreateVehicleDTO, Vehicle>().ReverseMap();
+            CreateMap<UpdateVehicleDTO, Vehicle>().ReverseMap();
         }
     }
 }
