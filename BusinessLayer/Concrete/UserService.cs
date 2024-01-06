@@ -38,9 +38,19 @@ namespace BusinessLayer.Concrete
             throw new NotImplementedException();
         }
 
-        public Task<ApiResponse> Register(RegisterRequestDTO model)
+        public async Task<ApiResponse> Register(RegisterRequestDTO model)
         {
-            throw new NotImplementedException();
+            var userFromDb = _dbContext.applicationUsers.FirstOrDefault(
+                x=>x.UserName.ToLower() == model.UserName.ToLower());
+            if (userFromDb != null)
+            {
+                _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                _response.İsSuccess = false;
+                _response.ErrorMessages.Add("Kullanıcı Adı Kullanılıyor");
+                return _response;
+            }
+
+
         }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccesLayer.Migrations
 {
     [DbContext(typeof(Context.DbContext))]
-    [Migration("20240105202644_mig_2")]
-    partial class mig_2
+    [Migration("20240106061026_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,7 +56,7 @@ namespace DataAccesLayer.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Bid");
+                    b.ToTable("Bids");
                 });
 
             modelBuilder.Entity("DataAccesLayer.Domain.PaymentHistory", b =>
@@ -86,7 +86,7 @@ namespace DataAccesLayer.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("PaymentHistory");
+                    b.ToTable("PaymentHistories");
                 });
 
             modelBuilder.Entity("DataAccesLayer.Domain.Vehicle", b =>
@@ -149,7 +149,7 @@ namespace DataAccesLayer.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Vehicle");
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("DataAccesLayer.Models.ApplicationUser", b =>

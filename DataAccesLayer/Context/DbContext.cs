@@ -1,4 +1,5 @@
-﻿using DataAccesLayer.Models;
+﻿using DataAccesLayer.Domain;
+using DataAccesLayer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,6 +14,11 @@ namespace DataAccesLayer.Context
     {
         public DbContext(DbContextOptions options) : base(options)
         {
+
         }
+        public DbSet<ApplicationUser> applicationUsers { get; set; }
+        public DbSet<Bid> Bids { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<PaymentHistory> PaymentHistories { get; set; }
     }
 }

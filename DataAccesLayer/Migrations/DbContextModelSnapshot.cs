@@ -53,7 +53,7 @@ namespace DataAccesLayer.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Bid");
+                    b.ToTable("Bids");
                 });
 
             modelBuilder.Entity("DataAccesLayer.Domain.PaymentHistory", b =>
@@ -83,7 +83,7 @@ namespace DataAccesLayer.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("PaymentHistory");
+                    b.ToTable("PaymentHistories");
                 });
 
             modelBuilder.Entity("DataAccesLayer.Domain.Vehicle", b =>
@@ -146,7 +146,7 @@ namespace DataAccesLayer.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Vehicle");
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("DataAccesLayer.Models.ApplicationUser", b =>
