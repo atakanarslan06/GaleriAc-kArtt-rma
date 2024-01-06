@@ -16,7 +16,7 @@ namespace DataAccesLayer.Context
         {
 
         }
-        public DbSet<ApplicationUser> applicationUsers { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Bid> Bids { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<PaymentHistory> PaymentHistories { get; set; }

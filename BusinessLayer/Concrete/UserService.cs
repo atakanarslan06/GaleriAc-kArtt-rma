@@ -6,6 +6,7 @@ using DataAccesLayer.Context;
 using DataAccesLayer.Enums;
 using DataAccesLayer.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,33 +17,33 @@ namespace BusinessLayer.Concrete
 {
     public class UserService : IUserService
     {
-        private readonly DbContext _dbContext;
+        private readonly DataAccesLayer.Context.DbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly ApiResponse _response;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private string secretKey;
-        public UserService(RoleManager<IdentityRole> roleManager, IConfiguration _configuration,
-            DbContext dbContext, IMapper mapper, ApiResponse response, UserManager<ApplicationUser> userManager)
+        public UserService(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, ApiResponse response, IMapper mapper, IConfiguration _configuration, DataAccesLayer.Context.DbContext context)
         {
-            _roleManager = roleManager;
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _userManager = userManager;
             _response = response;
+            _mapper = mapper;
+            _dbContext = context;
             _roleManager = roleManager;
-            secretKey = _configuration.GetValue<string>("SecretKey: jwtKey");
+            secretKey = _configuration.GetValue<string>("SecretKey:jwtKey");
+
         }
 
         public async Task<ApiResponse> Login(LoginRequestDTO model)
         {
-            ApplicationUser userFromDb = _dbContext.applicationUsers.FirstOrDefault(u=>u.UserName.ToLower() == model.UserName.ToLower());
+            ApplicationUser userFromDb = _dbContext.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
             if (userFromDb != null)
             {
                 bool isValid = await _userManager.CheckPasswordAsync(userFromDb, model.Password);
                 if (!isValid)
                 {
                     _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                    _response.ErrorMessages.Add("Giriş Bilgileri Hatalı");
+                    _response.ErrorMessages.Add("Your entry information is not correct");
                     _response.İsSuccess = false;
                     return _response;
                 }
@@ -56,14 +57,16 @@ namespace BusinessLayer.Concrete
                     {
                         new Claim(ClaimTypes.NameIdentifier, userFromDb.Id),
                         new Claim(ClaimTypes.Email, userFromDb.Email),
-                        new Claim(ClaimTypes.Role, role.FirstOrDefault()),
-                        new Claim("fullName", userFromDb.FullName),
+                        new Claim(ClaimTypes.Role, role.FirstOrDefault() == null ? "NormalUser" : role.FirstOrDefault()),
+                        new Claim("fullName", userFromDb.FullName)
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 
                 };
+
                 SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+
                 LoginResponseModel _model = new()
                 {
                     Email = userFromDb.Email,
@@ -73,24 +76,36 @@ namespace BusinessLayer.Concrete
                 _response.İsSuccess = true;
                 _response.StatusCode = System.Net.HttpStatusCode.OK;
                 return _response;
+
             }
             _response.İsSuccess = false;
-            _response.ErrorMessages.Add("Ooops! bir şeyler yanlış gitti");
+            _response.ErrorMessages.Add("Ooops! something went wrong");
             return _response;
+
         }
 
         public async Task<ApiResponse> Register(RegisterRequestDTO model)
         {
-            var userFromDb = _dbContext.applicationUsers.FirstOrDefault(
-                x => x.UserName.ToLower() == model.UserName.ToLower());
+            var userFromDb = _dbContext.ApplicationUsers.FirstOrDefault(x => x.UserName.ToLower() == model.UserName.ToLower());
             if (userFromDb != null)
             {
                 _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
                 _response.İsSuccess = false;
-                _response.ErrorMessages.Add("Kullanıcı Adı Kullanılıyor");
+                _response.ErrorMessages.Add("Username already exist");
                 return _response;
             }
-            var newUser = _mapper.Map<ApplicationUser>(model);
+
+            //var newUser = _mapper.Map<ApplicationUser>(model);  
+
+            ApplicationUser newUser = new()
+            {
+                FullName = model.FullName,
+                UserName = model.UserName,
+                NormalizedEmail = model.UserName.ToUpper(),
+                Email = model.UserName
+            };
+
+
             var result = await _userManager.CreateAsync(newUser, model.Password);
             if (result.Succeeded)
             {
@@ -109,7 +124,7 @@ namespace BusinessLayer.Concrete
                 {
                     await _userManager.AddToRoleAsync(newUser, UserType.Seller.ToString());
                 }
-                else
+                else if (model.UserType.ToString().ToLower() == UserType.NormalUser.ToString().ToLower())
                 {
                     await _userManager.AddToRoleAsync(newUser, UserType.NormalUser.ToString());
                 }

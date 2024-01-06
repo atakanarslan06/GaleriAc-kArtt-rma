@@ -10,8 +10,8 @@ namespace DataAccesLayer.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public string FullName { get; set; }
-        public string ProfilePicture { get; set; }
+        public string? FullName { get; set; }
+        public string? ProfilePicture { get; set; }
         public DateTime DateOfBirth { get; set; }
 
         public ICollection<PaymentHistory> PaymentHistories { get; set; }
