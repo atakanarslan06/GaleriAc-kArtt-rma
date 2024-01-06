@@ -18,7 +18,8 @@ builder.Services.AddDbContext<DataAccesLayer.Context.ApplicationDbContext>(optio
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<DataAccesLayer.Context.ApplicationDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+//builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped(typeof(ApiResponse));
 builder.Services.AddSwaggerGen();
 

@@ -9,8 +9,10 @@ namespace GaleriAcıkArttırma.Controllers
     public class VehicleController : ControllerBase
     {
         private readonly IVehicleService _vehicleservice;
-        public VehicleController(IVehicleService vehicleService)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public VehicleController(IVehicleService vehicleService, IWebHostEnvironment _webHostEnvironment)
         {
+            _webHostEnvironment = _webHostEnvironment;
             _vehicleservice = vehicleService;
         }
 
@@ -21,10 +23,23 @@ namespace GaleriAcıkArttırma.Controllers
         //Task<ApiResponse> ChangeVehicleStatus(int vehicleId);
 
         [HttpPost("CreateVehicle")]
-        public async Task<IActionResult> AddVehicle(CreateVehicleDTO model)
+        public async Task<IActionResult> AddVehicle([FromForm]CreateVehicleDTO model)
         {
             if (ModelState.IsValid)
             {
+                if(model.File == null || model.File.Length == 0)
+                {
+                    return BadRequest();
+                }
+                string uploadsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "Images");
+                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(model.File.FileName)}";
+                string filePath = Path.Combine(uploadsFolder, fileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(fileStream);
+                }
+                model.Image = fileName;
+
                 var result = await _vehicleservice.CreateVehicle(model);
                 if (result.İsSuccess)
                 {
