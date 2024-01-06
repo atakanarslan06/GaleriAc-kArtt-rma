@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLayer.Dtos;
+using DataAccesLayer.Domain;
 using DataAccesLayer.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace BusinessLayer.Mapper
     {
         public MappingProfile()
         { 
-            CreateMap<RegisterRequestDTO, ApplicationUser>().ReverseMap();
+            CreateMap<CreateVehicleDTO, Vehicle>().ReverseMap();
         }
     }
 }
